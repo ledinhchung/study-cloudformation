@@ -1,0 +1,33 @@
+Resources:
+  S3Bucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      AccessControl: 'PublicRead'
+      BucketName: 'chung-121a12121212'
+      WebsiteConfiguration:
+        IndexDocument: 'index.html'
+        ErrorDocument: 'error.html'
+  MyVpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: '10.0.0.0/16'
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+  MySubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: '10.0.0.0/24'
+      VpcId: 
+        Ref: 'MyVpc'
+  Securittest:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: 'This is my test security group open ssh port to public'
+      GroupName: 'test-sg'
+      SecurityGroupIngress:
+        - IpProtocol: 'tcp'
+          FromPort: '22'
+          ToPort: '22'
+          CidrIp: '0.0.0.0/0'
+      VpcId:
+        Ref: 'MyVpc'
