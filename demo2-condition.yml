@@ -53,18 +53,24 @@ Resources:
     Properties:
       InstanceType: t2.medium
       ImageId: 'ami-0ff8a91507f77f867'
-      SecurityGroup: !Ref Securittest
+      SecurityGroupIds: 
+      - !Ref Securittest
+      SubnetId: !Ref MySubnet
   Ec2Instance2:
     Type: AWS::EC2::Instance
     Condition: DevEnv
     Properties:
       InstanceType: t2.small
       ImageId: 'ami-0ff8a91507f77f867'
-      SecurityGroup: !Ref Securittest
+      SecurityGroupIds: 
+      - !Ref Securittest
+      SubnetId: !Ref MySubnet
   Ec2Instance3:
     Type: AWS::EC2::Instance
     Condition: TestEnv
     Properties:
       InstanceType: t2.micro
       ImageId: 'ami-0ff8a91507f77f867'
-      SecurityGroup: !Ref Securittest
+      SecurityGroupIds: 
+      - !Ref Securittest
+      SubnetId: !Ref MySubnet
