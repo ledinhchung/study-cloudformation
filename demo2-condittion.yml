@@ -1,0 +1,70 @@
+Parameters:
+  EnvType:
+    Description: "Select enveronment type Prod | Test | Dev"
+    ConstraintDescription: "Please select EnvironmentType"
+    Type: string
+    Default: Dev
+    AllowedValues:
+      - Prod
+      - Test
+      - Dev
+Conditions:
+  ProductionEnv: !Equals [!Ref EnvType, Prod ]
+  TestEnv: !Equals [!Ref EnvType, Test ]
+  DevEnv: !Equals [!Ref EnvType, Dev ]
+Resources:
+  MyVpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: '10.0.0.0/16'
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+  MySubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: '10.0.0.0/24'
+      VpcId: 
+        Ref: 'MyVpc'
+  MySubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: '10.0.1.0/24'
+      VpcId: 
+        Ref: 'MyVpc'
+  Securittest:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: 'This is my test security group open ssh port to public'
+      GroupName: 'test-sg'
+      SecurityGroupIngress:
+        - IpProtocol: 'tcp'
+          FromPort: '22'
+          ToPort: '22'
+          CidrIp: '0.0.0.0/0'
+        - IpProtocol: 'tcp'
+          FromPort: '80'
+          ToPort: '80'
+          CidrIp: '0.0.0.0/0'
+      VpcId:
+        Ref: 'MyVpc'
+  Ec2Instance1:
+    Type: AWS::EC2::Instance
+    Condition: ProductEnv
+    InstanceType: t2.medium
+    Properties:
+      ImageId: 'ami-0ff8a91507f77f867'
+      SecurityGroup: !Ref Securittest
+  Ec2Instance2:
+    Type: AWS::EC2::Instance
+    Condition: DevEnv
+    InstanceType: t2.small
+    Properties:
+      ImageId: 'ami-0ff8a91507f77f867'
+      SecurityGroup: !Ref Securittest
+  Ec2Instance3:
+    Type: AWS::EC2::Instance
+    Condition: TestEnv
+    InstanceType: t2.micro
+    Properties:
+      ImageId: 'ami-0ff8a91507f77f867'
+      SecurityGroup: !Ref Securittest
