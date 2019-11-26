@@ -19,67 +19,96 @@ Resources:
       VpcId: !Ref DemoVpc
   PublicSubnet1:
     Type: AWS::EC2::Subnet
-    CidrBlock: 10.0.1.0/24
-    VpcId: !Ref DemoVpc
-    AvailabilityZone:
-      !Select
-        - 0
-        - !GetAZs
-    Tags:
-      - Key: Name
-        Value: Pulic Subnet 1
+    Properties:
+      VpcId: !Ref DemoVpc
+      CidrBlock: 10.0.1.0/24
+      AvailabilityZone:
+        !Select
+          - 0
+          - !GetAZs
+      Tags:
+        - Key: Name
+          Value: Pulic Subnet 1
   PublicSubnet2:
     Type: AWS::EC2::Subnet
-    CidrBlock: 10.0.2.0/24
-    VpcId: !Ref DemoVpc
-    AvailabilityZone:
-      !Select
-        - 1
-        - !GetAZs
-    Tags:
-      - Key: Name
-        Value: Pulic Subnet 2
+    Properties:
+      CidrBlock: 10.0.2.0/24
+      VpcId: !Ref DemoVpc
+      AvailabilityZone:
+        !Select
+          - 1
+          - !GetAZs
+      Tags:
+        - Key: Name
+          Value: Pulic Subnet 2
   PrivateSubnet1:
     Type: AWS::EC2::Subnet
-    CidrBlock: 10.0.3.0/24
-    VpcId: !Ref DemoVpc
-    AvailabilityZone:
-      !Select
-        - 0
-        - !GetAZs
-    Tags:
-      - Key: Name
-        Value: Private Subnet 1
+    Properties:
+      CidrBlock: 10.0.3.0/24
+      VpcId: !Ref DemoVpc
+      AvailabilityZone:
+        !Select
+          - 0
+          - !GetAZs
+      Tags:
+        - Key: Name
+          Value: Private Subnet 1
   PrivateSubnet2:
     Type: AWS::EC2::Subnet
-    CidrBlock: 10.0.4.0/24
-    VpcId: !Ref DemoVpc
-    AvailabilityZone:
-      !Select
-        - 1
-        - !GetAZs
-    Tags:
-      - Key: Name
-        Value: Private Subnet 2
+    Properties:
+      CidrBlock: 10.0.4.0/24
+      VpcId: !Ref DemoVpc
+      AvailabilityZone:
+        !Select
+          - 1
+          - !GetAZs
+      Tags:
+        - Key: Name
+          Value: Private Subnet 2
   DBSubnet1:
     Type: AWS::EC2::Subnet
-    CidrBlock: 10.0.5.0/24
-    VpcId: !Ref DemoVpc
-    AvailabilityZone:
-      !Select
-        - 0
-        - !GetAZs
-    Tags:
-      - Key: Name
-        Value: DB Subnet 1
+    Properties:
+      CidrBlock: 10.0.5.0/24
+      VpcId: !Ref DemoVpc
+      AvailabilityZone:
+        !Select
+          - 0
+          - !GetAZs
+      Tags:
+        - Key: Name
+          Value: DB Subnet 1
   DBSubnet2:
     Type: AWS::EC2::Subnet
-    CidrBlock: 10.0.6.0/24
-    VpcId: !Ref DemoVpc
-    AvailabilityZone:
-      !Select
-        - 1
-        - !GetAZs
-    Tags:
-      - Key: Name
-        Value: DB Subnet 2
+    Properties:
+      CidrBlock: 10.0.6.0/24
+      VpcId: !Ref DemoVpc
+      AvailabilityZone:
+        !Select
+          - 1
+          - !GetAZs
+      Tags:
+        - Key: Name
+          Value: DB Subnet 2
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref DemoVpc
+      Tags:
+        - Key: Name
+          Value: Public Demo Route
+  RouteTraficToInternet:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+      RouteTableId: !Ref PublicRouteTable
+  AssociatePublic1ToPublicRouteTable:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      SubnetId: !Ref PublicSubnet1
+  AssociatePublic2ToPublicRouteTable:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      SubnetId: !Ref PublicSubnet2
