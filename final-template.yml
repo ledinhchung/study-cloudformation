@@ -17,3 +17,69 @@ Resources:
     Properties:
       InternetGatewayId: !Ref InternetGateway
       VpcId: !Ref DemoVpc
+  PublicSubnet1:
+    Type: AWS::EC2::Subnet
+    CidrBlock: 10.0.1.0/24
+    VpcId: !Ref DemoVpc
+    AvailabilityZone:
+      !Select
+        - 0
+        - !GetAZs
+    Tags:
+      - Key: Name
+        Value: Pulic Subnet 1
+  PublicSubnet2:
+    Type: AWS::EC2::Subnet
+    CidrBlock: 10.0.2.0/24
+    VpcId: !Ref DemoVpc
+    AvailabilityZone:
+      !Select
+        - 1
+        - !GetAZs
+    Tags:
+      - Key: Name
+        Value: Pulic Subnet 2
+  PrivateSubnet1:
+    Type: AWS::EC2::Subnet
+    CidrBlock: 10.0.3.0/24
+    VpcId: !Ref DemoVpc
+    AvailabilityZone:
+      !Select
+        - 0
+        - !GetAZs
+    Tags:
+      - Key: Name
+        Value: Private Subnet 1
+  PrivateSubnet2:
+    Type: AWS::EC2::Subnet
+    CidrBlock: 10.0.4.0/24
+    VpcId: !Ref DemoVpc
+    AvailabilityZone:
+      !Select
+        - 1
+        - !GetAZs
+    Tags:
+      - Key: Name
+        Value: Private Subnet 2
+  DBSubnet1:
+    Type: AWS::EC2::Subnet
+    CidrBlock: 10.0.5.0/24
+    VpcId: !Ref DemoVpc
+    AvailabilityZone:
+      !Select
+        - 0
+        - !GetAZs
+    Tags:
+      - Key: Name
+        Value: DB Subnet 1
+  DBSubnet2:
+    Type: AWS::EC2::Subnet
+    CidrBlock: 10.0.6.0/24
+    VpcId: !Ref DemoVpc
+    AvailabilityZone:
+      !Select
+        - 1
+        - !GetAZs
+    Tags:
+      - Key: Name
+        Value: DB Subnet 2
