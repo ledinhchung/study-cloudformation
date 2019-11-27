@@ -123,3 +123,14 @@ Resources:
           FromPort: 80
           ToPort: 80
           CidrIp: 0.0.0.0/0
+  AppSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: SecurityGroup for Demo app open port 80 to ELBSecurityGroup.
+      GroupName: app-sg
+      VpcId: !Ref DemoVpc
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          SourceSecuirtyGroupId: !Ref ELBSecurityGroup
