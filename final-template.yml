@@ -133,4 +133,4 @@ Resources:
         - IpProtocol: tcp
           FromPort: 80
           ToPort: 80
-          SourceSecuirtyGroupId: !Ref ELBSecurityGroup
+          SourceSecurityGroupId: !Ref ELBSecurityGroup
