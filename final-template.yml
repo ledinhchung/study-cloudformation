@@ -179,3 +179,35 @@ Resources:
           FromPort: 3306
           ToPort: 3306
           SourceSecurityGroupId: !Ref AppSecurityGroup
+  DemoElasticLoadBalance:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Type: application
+      Name: demo-elb
+      SecurityGroups:
+        - !Ref ELBSecurityGroup
+      Subnets:
+        - !Ref PublicSubnet1
+        - !Ref PublicSubnet2
+  DemoTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: DemoGroup
+      VpcId: !Ref DemoVpc
+      HealthCheckEnabled: true
+      HealthCheckPath: /health.html
+      HealthCheckProtocol: HTTP
+      Port: 80
+      Protocol: HTTP
+      TargetType: instance
+  ELBListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      Protocol: HTTP
+      Port: 80
+      LoadBalancerArn: !Ref DemoElasticLoadBalance
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref DemoTargetGroup
+
+
