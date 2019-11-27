@@ -209,5 +209,8 @@ Resources:
       DefaultActions:
         - Type: forward
           TargetGroupArn: !Ref DemoTargetGroup
-
+  DemoECSCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: DemoCluster
 
