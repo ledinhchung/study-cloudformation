@@ -237,7 +237,9 @@ Resources:
               Protocol: tcp
   FrontEndService:
     Type: AWS::ECS::Service
-    DependsOn: ELBListener
+    DependsOn: 
+      - ELBListener
+      - ELBSecurityGroup
     Properties:
       Cluster: !Ref DemoECSCluster
       LaunchType: FARGATE
@@ -251,7 +253,7 @@ Resources:
         AwsvpcConfiguration:
           AssignPublicIp: ENABLED
           SecurityGroups:
-            - ELBSecurityGroup
+            - !Ref ELBSecurityGroup
           Subnets:
             - !Ref PublicSubnet1
             - !Ref PublicSubnet2
