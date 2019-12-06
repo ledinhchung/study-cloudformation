@@ -1,3 +1,27 @@
+Parameters:
+  DBName:
+    Default: demoDBApp
+    Description: The database name
+    Type: String
+    MinLength: 1
+    MaxLength: 64
+    AllowedPattern: '[a-zA-z][a-zA-Z0-9]*'
+    ConstraintDescription: Database name must begin with a latter and contain onliy alphanumeric characters
+  DBUserName:
+    Default: demouser
+    Description: The database master user name
+    Type: String
+    MinLength: 1
+    MaxLength: 16
+    AllowedPattern: '[a-zA-z][a-zA-Z0-9]*'
+    ConstraintDescription: User name must begin with a latter and contain onliy alphanumeric characters
+  DBPassword:
+    Description: The database master password
+    Type: String
+    MinLength: 8
+    MaxLength: 64
+    AllowedPattern: '[a-zA-z][a-zA-Z0-9]*'
+    ConstraintDescription: Password must begin with a latter and contain onliy alphanumeric characters
 Resources:
   InternetGateway:
     Type: AWS::EC2::InternetGateway
@@ -295,4 +319,20 @@ Resources:
             - !Ref PrivateSubnet1
             - !Ref PrivateSubnet2
       TaskDefinition: !Ref FrontEndTask
+  DBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupName: demo_subnet_group
+      DBSubnetGroupDescription: Demo subnet group
+      SubnetIds:
+        - !Ref DBSubnet1
+        - !Ref DBSubnet2
+  Database:
+    Type: AWS::RDS::DBCluster
+    Properties:
+      DBSubnetGroupName: !Ref DBSubnetGroup
+      DatabaseName: !Ref DBName
+      MasterUsername: !Ref DBUserName
+      MasterUserPassword: !Ref DBPassword
+      Engine: aurora
 
