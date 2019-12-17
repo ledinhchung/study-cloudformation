@@ -2,7 +2,8 @@ Resources:
   LineQueue:
     Type: AWS::SQS::Queue
     Properties:
-      QueueName: line-queue
+      FifoQueue: true
+      QueueName: line-queue.fifo
   APIGatewaySQSRole:
     Type: AWS::IAM::Role
     DependsOn: LineQueue
@@ -34,6 +35,11 @@ Resources:
                   - "Arn"
                 Action:
                   - "sqs:SendMessage"
+  SqsPullMessagePolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      UserName: SqsPullMessageUser
+
   LineApi:
     Type: AWS::ApiGateway::RestApi
     Properties:
@@ -64,13 +70,15 @@ Resources:
           - "Arn"
         IntegrationHttpMethod: POST
         PassthroughBehavior: NEVER
+        RequestParameters:
+          "integration.request.header.Content-Type": "'application/x-www-form-urlencoded'"
         RequestTemplates:
-          "application/json": "Action=SendMessage&MessageBody=$input.body"
+          "application/json": "Action=SendMessage&MessageBody=$input.body&MessageGroupId=$input.json('$.events[0].source.userId')&MessageDeduplicationId=$input.json('$.events[0].message.id')"
         IntegrationResponses:
           - StatusCode: "200"
             ResponseTemplates:
               "application/json": "{ \"StatusCode\": 200, \"Message\": \"OK\"}"
-        Uri: arn:aws:apigateway:us-east-1:sqs:path/258780710483/line-queue
+        Uri: arn:aws:apigateway:us-east-1:sqs:path/617424127054/line-queue.fifo
   LineDeployPord:
     Type: AWS::ApiGateway::Deployment
     DependsOn: LinePostMethod
