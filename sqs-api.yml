@@ -1,0 +1,84 @@
+Resources:
+  LineQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: line-queue
+  APIGatewaySQSRole:
+    Type: AWS::IAM::Role
+    DependsOn: LineQueue
+    Properties:
+      RoleName: ApiGatewaySqsRole
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - apigateway.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: APIGatewaySqsRolePolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Resource:
+                  - "*"
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+              - Effect: Allow
+                Resource: !GetAtt
+                  - LineQueue
+                  - "Arn"
+                Action:
+                  - "sqs:SendMessage"
+  LineApi:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: line-messages
+  LineResource:
+    Type: AWS::ApiGateway::Resource
+    DependsOn: LineApi
+    Properties:
+      RestApiId: !Ref LineApi
+      ParentId: !GetAtt
+        - LineApi
+        - RootResourceId
+      PathPart: message
+  LinePostMethod:
+    Type: AWS::ApiGateway::Method
+    DependsOn: LineResource
+    Properties:
+      ResourceId: !Ref LineResource
+      RestApiId: !Ref LineApi
+      AuthorizationType: NONE
+      HttpMethod: POST
+      MethodResponses:
+        - StatusCode: 200
+      Integration:
+        Type: AWS
+        Credentials: !GetAtt
+          - APIGatewaySQSRole
+          - "Arn"
+        IntegrationHttpMethod: POST
+        PassthroughBehavior: NEVER
+        RequestTemplates:
+          "application/json": "Action=SendMessage&MessageBody=$input.body"
+        IntegrationResponses:
+          - StatusCode: "200"
+            ResponseTemplates:
+              "application/json": "{ \"StatusCode\": 200, \"Message\": \"OK\"}"
+        Uri: arn:aws:apigateway:us-east-1:sqs:path/258780710483/line-queue
+  LineDeployPord:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn: LinePostMethod
+    Properties:
+      RestApiId: !Ref LineApi
+  LineProdState:
+    Type: AWS::ApiGateway::Stage
+    Properties:
+      RestApiId: !Ref LineApi
+      DeploymentId: !Ref LineDeployPord
+      StageName: pord
